@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Planilha Controle Total — Pequenas Lojas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --dark:#0B0E1A;
+  --navy:#111827;
+  --card:#161C2D;
+  --border:#1F2A40;
+  --accent:#00D4AA;
+  --accent2:#FFE55C;
+  --danger:#FF5F7E;
+  --purple:#A78BFA;
+  --text:#E2E8F0;
+  --muted:#94A3B8;
+  --white:#FFFFFF;
+  --green:#34D399;
+  --radius:16px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body{
+  background:var(--dark);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:16px;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
+}
+
+/* ── NAVBAR ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 40px;
+  background:rgba(11,14,26,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:20px;
+  color:var(--accent);letter-spacing:-0.5px;
+}
+.nav-logo span{color:var(--accent2);}
+.nav-cta{
+  background:var(--accent);color:var(--dark);
+  font-family:'Syne',sans-serif;font-weight:700;font-size:14px;
+  padding:10px 22px;border-radius:50px;border:none;cursor:pointer;
+  text-decoration:none;transition:all .2s;
+}
+.nav-cta:hover{background:var(--accent2);transform:translateY(-1px);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  padding:120px 24px 80px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;
+  width:700px;height:700px;
+  background:radial-gradient(circle, rgba(0,212,170,0.12) 0%, transparent 70%);
+  top:-100px;left:50%;transform:translateX(-50%);
+  pointer-events:none;
+}
+.hero::after{
+  content:'';position:absolute;
+  width:400px;height:400px;
+  background:radial-gradient(circle, rgba(255,229,92,0.08) 0%, transparent 70%);
+  bottom:0;right:-100px;
+  pointer-events:none;
+}
+
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.3);
+  color:var(--accent);font-size:13px;font-weight:500;
+  padding:6px 16px;border-radius:50px;margin-bottom:24px;
+  animation:fadeDown .6s ease both;
+}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 1.5s infinite;}
+
+.hero h1{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(2.4rem,5vw,4.2rem);
+  line-height:1.1;letter-spacing:-1.5px;
+  margin-bottom:12px;
+  animation:fadeUp .7s .1s ease both;
+}
+.hero h1 .hl{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero h1 .hl2{color:var(--accent2);}
+
+.hero-sub{
+  font-size:1.15rem;color:var(--muted);max-width:560px;
+  margin:0 auto 36px;
+  animation:fadeUp .7s .2s ease both;
+}
+
+.hero-tags{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
+  margin-bottom:40px;
+  animation:fadeUp .7s .3s ease both;
+}
+.hero-tag{
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text);font-size:13px;padding:6px 14px;border-radius:50px;
+}
+.hero-tag strong{color:var(--accent);}
+
+.hero-cta{animation:fadeUp .7s .4s ease both;}
+.btn-primary{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--accent),#00B896);
+  color:var(--dark);font-family:'Syne',sans-serif;font-weight:800;
+  font-size:1.1rem;padding:18px 48px;border-radius:50px;
+  text-decoration:none;border:none;cursor:pointer;
+  box-shadow:0 0 40px rgba(0,212,170,0.3);
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.btn-primary::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--accent2),#FFD000);
+  opacity:0;transition:opacity .25s;
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 0 60px rgba(0,212,170,0.45);}
+.btn-primary:hover::before{opacity:1;}
+.btn-primary span{position:relative;z-index:1;}
+
+.price-tag{
+  margin-top:20px;font-size:14px;color:var(--muted);
+  animation:fadeUp .7s .5s ease both;
+}
+.price-tag strong{color:var(--accent2);font-size:1.5rem;font-family:'Syne',sans-serif;}
+.price-old{text-decoration:line-through;color:var(--danger);margin-right:8px;}
+
+/* ── URGENCY BAR ── */
+.urgency-bar{
+  background:linear-gradient(90deg,var(--danger),#C0392B);
+  color:white;text-align:center;font-size:14px;font-weight:600;
+  padding:10px 20px;position:relative;z-index:99;
+  letter-spacing:.3px;
+}
+.urgency-bar span{opacity:.85;}
+
+/* ── PROBLEM SECTION ── */
+section{position:relative;z-index:1;}
+
+.section-label{
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
+  text-transform:uppercase;letter-spacing:3px;color:var(--accent);
+  margin-bottom:14px;display:block;text-align:center;
+}
+.section-title{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(1.8rem,3.5vw,2.8rem);
+  line-height:1.2;letter-spacing:-0.5px;
+  text-align:center;margin-bottom:16px;
+}
+.section-sub{text-align:center;color:var(--muted);max-width:520px;margin:0 auto 56px;font-size:1.05rem;}
+
+.pain-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:16px;max-width:900px;margin:0 auto;
+}
+.pain-card{
+  background:rgba(255,95,126,0.06);
+  border:1px solid rgba(255,95,126,0.2);
+  border-radius:var(--radius);padding:24px;
+}
+.pain-icon{font-size:28px;margin-bottom:12px;}
+.pain-card h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:8px;color:var(--danger);}
+.pain-card p{font-size:.9rem;color:var(--muted);line-height:1.5;}
+
+/* ── SOLUTION / FEATURES ── */
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;max-width:1000px;margin:0 auto;
+}
+.feature-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px;
+  transition:border-color .25s, transform .25s;
+  position:relative;overflow:hidden;
+}
+.feature-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),transparent);
+  opacity:0;transition:opacity .25s;
+}
+.feature-card:hover{border-color:rgba(0,212,170,0.4);transform:translateY(-4px);}
+.feature-card:hover::before{opacity:1;}
+.feature-icon{
+  width:48px;height:48px;border-radius:12px;
+  background:rgba(0,212,170,0.1);display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:16px;
+}
+.feature-card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:8px;}
+.feature-card p{font-size:.9rem;color:var(--muted);line-height:1.55;}
+
+/* ── WHAT'S INSIDE ── */
+.inside-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;max-width:960px;margin:0 auto;
+}
+.inside-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;
+  display:flex;align-items:flex-start;gap:14px;
+}
+.inside-card .num{
+  min-width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),#00B896);
+  color:var(--dark);font-family:'Syne',sans-serif;font-weight:800;font-size:14px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.inside-card h4{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:4px;}
+.inside-card p{font-size:.85rem;color:var(--muted);}
+
+/* ── COMPARISON TABLE ── */
+.compare-wrap{max-width:820px;margin:0 auto;}
+.compare-table{width:100%;border-collapse:collapse;border-radius:var(--radius);overflow:hidden;}
+.compare-table th{
+  padding:16px 20px;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;
+  text-align:center;
+}
+.compare-table th:first-child{text-align:left;}
+.col-good{background:rgba(0,212,170,0.12);color:var(--accent);}
+.col-bad{background:rgba(255,95,126,0.08);color:var(--danger);}
+.col-feat{background:var(--card);}
+.compare-table td{
+  padding:14px 20px;font-size:.92rem;border-top:1px solid var(--border);
+  text-align:center;
+}
+.compare-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+.compare-table td .yes{color:var(--green);font-weight:700;}
+.compare-table td .no{color:var(--danger);}
+.compare-table tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+
+/* ── TESTIMONIALS ── */
+.testi-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;max-width:960px;margin:0 auto;
+}
+.testi-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px;position:relative;
+}
+.testi-card::before{
+  content:'"';
+  position:absolute;top:16px;right:20px;
+  font-size:64px;line-height:1;color:var(--accent);opacity:.15;
+  font-family:'Syne',sans-serif;font-weight:800;
+}
+.stars{color:var(--accent2);font-size:16px;margin-bottom:14px;letter-spacing:2px;}
+.testi-text{font-size:.95rem;color:var(--text);line-height:1.6;margin-bottom:20px;font-style:italic;}
+.testi-author{display:flex;align-items:center;gap:12px;}
+.testi-avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-weight:800;color:var(--dark);font-size:16px;
+}
+.testi-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;}
+.testi-role{font-size:.82rem;color:var(--muted);}
+
+/* ── SEGMENTS ── */
+.seg-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:16px;max-width:800px;margin:0 auto;
+}
+.seg-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px 16px;text-align:center;
+  transition:border-color .2s, transform .2s;
+}
+.seg-card:hover{border-color:var(--accent);transform:translateY(-4px);}
+.seg-emoji{font-size:36px;margin-bottom:12px;display:block;}
+.seg-card span{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;}
+
+/* ── PRICING ── */
+.pricing-box{
+  max-width:520px;margin:0 auto;
+  background:var(--card);border:1px solid rgba(0,212,170,0.3);
+  border-radius:24px;padding:48px 40px;text-align:center;
+  position:relative;overflow:hidden;
+  box-shadow:0 0 80px rgba(0,212,170,0.1);
+}
+.pricing-box::before{
+  content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+  width:300px;height:200px;
+  background:radial-gradient(circle,rgba(0,212,170,0.15),transparent);
+}
+.pricing-badge{
+  background:var(--danger);color:white;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:12px;
+  padding:4px 14px;border-radius:50px;display:inline-block;margin-bottom:24px;
+  letter-spacing:1px;text-transform:uppercase;
+}
+.pricing-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;margin-bottom:6px;}
+.pricing-subtitle{color:var(--muted);font-size:.95rem;margin-bottom:32px;}
+.price-from{font-size:.9rem;color:var(--muted);}
+.price-from del{color:var(--danger);}
+.price-main{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:4rem;color:var(--accent);letter-spacing:-2px;line-height:1;
+  margin:8px 0;
+}
+.price-main sup{font-size:1.8rem;vertical-align:super;margin-right:4px;}
+.price-install{font-size:.9rem;color:var(--muted);margin-bottom:32px;}
+.pricing-checks{text-align:left;margin-bottom:36px;}
+.pricing-checks li{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+  font-size:.95rem;
+}
+.pricing-checks li:last-child{border-bottom:none;}
+.pricing-checks li::before{
+  content:'✓';min-width:22px;height:22px;
+  background:rgba(0,212,170,0.15);color:var(--accent);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:13px;flex-shrink:0;
+}
+.btn-big{
+  width:100%;display:block;
+  background:linear-gradient(135deg,var(--accent),#00B896);
+  color:var(--dark);font-family:'Syne',sans-serif;font-weight:800;
+  font-size:1.2rem;padding:20px;border-radius:50px;
+  text-decoration:none;border:none;cursor:pointer;
+  box-shadow:0 0 40px rgba(0,212,170,0.3);
+  transition:all .25s;
+}
+.btn-big:hover{transform:translateY(-3px);box-shadow:0 0 60px rgba(0,212,170,0.45);}
+.guarantee{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-top:20px;font-size:.85rem;color:var(--muted);
+}
+.guarantee-icon{font-size:24px;}
+
+/* ── BONUS ── */
+.bonus-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;max-width:900px;margin:0 auto;
+}
+.bonus-card{
+  background:var(--card);border:1px solid rgba(255,229,92,0.2);
+  border-radius:var(--radius);padding:28px;
+  display:flex;flex-direction:column;gap:12px;
+}
+.bonus-tag{
+  background:rgba(255,229,92,0.1);color:var(--accent2);
+  font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  padding:4px 12px;border-radius:50px;display:inline-block;width:fit-content;
+}
+.bonus-card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;}
+.bonus-card p{font-size:.9rem;color:var(--muted);}
+.bonus-value{
+  display:flex;align-items:center;gap:8px;
+  font-size:.9rem;
+}
+.bonus-price-old{color:var(--danger);text-decoration:line-through;}
+.bonus-price-new{color:var(--green);font-weight:700;font-family:'Syne',sans-serif;}
+
+/* ── FAQ ── */
+.faq-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px;}
+.faq-item{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.faq-q{
+  width:100%;background:none;border:none;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 24px;color:var(--text);font-size:1rem;font-weight:600;
+  cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;
+}
+.faq-q:hover{color:var(--accent);}
+.faq-icon{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(0,212,170,0.1);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;transition:transform .25s;
+}
+.faq-a{
+  padding:0 24px;max-height:0;overflow:hidden;
+  font-size:.93rem;color:var(--muted);line-height:1.6;
+  transition:max-height .3s ease, padding .3s ease;
+}
+.faq-item.open .faq-a{max-height:300px;padding:0 24px 20px;}
+.faq-item.open .faq-icon{transform:rotate(45deg);}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--navy);border-top:1px solid var(--border);
+  text-align:center;padding:40px 24px;font-size:.85rem;color:var(--muted);
+}
+footer strong{color:var(--text);}
+footer a{color:var(--accent);text-decoration:none;}
+
+/* ── SECTIONS PADDING ── */
+.section-pad{padding:96px 24px;}
+.section-pad-sm{padding:72px 24px;}
+
+/* ── DIVIDER ── */
+.divider{
+  max-width:120px;height:3px;margin:0 auto 56px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.visible{opacity:1;transform:none;}
+
+/* ── COUNTER ── */
+.stats-row{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:48px;
+  max-width:700px;margin:0 auto;
+}
+.stat-item{text-align:center;}
+.stat-num{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:2.8rem;
+  color:var(--accent);letter-spacing:-1px;display:block;
+}
+.stat-label{font-size:.9rem;color:var(--muted);}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:none;}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:none;}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* ── STICKY CTA ── */
+.sticky-cta{
+  position:fixed;bottom:24px;right:24px;z-index:99;
+  background:linear-gradient(135deg,var(--accent),#00B896);
+  color:var(--dark);font-family:'Syne',sans-serif;font-weight:800;
+  font-size:.9rem;padding:14px 24px;border-radius:50px;
+  text-decoration:none;box-shadow:0 8px 32px rgba(0,212,170,0.35);
+  transition:all .25s;display:flex;align-items:center;gap:8px;
+}
+.sticky-cta:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,212,170,0.5);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  nav{padding:14px 20px;}
+  .nav-logo{font-size:17px;}
+  .hero{padding:100px 20px 60px;}
+  .section-pad{padding:64px 20px;}
+  .section-pad-sm{padding:48px 20px;}
+  .pricing-box{padding:32px 20px;}
+  .price-main{font-size:3rem;}
+  .btn-big{font-size:1rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- URGENCY BAR -->
+<div class="urgency-bar">🔥 <strong>OFERTA ESPECIAL:</strong> <span>Preço promocional por tempo limitado — Não perca!</span></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Controle<span>Total</span></div>
+  <a href="#comprar" class="nav-cta">Quero Agora →</a>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="badge"><span class="badge-dot"></span> Mais de 18.000 lojas já usam</div>
+  <h1>
+    Chega de perder dinheiro<br>
+    por falta de <span class="hl">controle</span>
+  </h1>
+  <p class="hero-sub">
+    A planilha profissional que controla entradas, saídas, estoque, clientes e caixa — tudo automático, tudo em um só lugar.
+  </p>
+  <div class="hero-tags">
+    <div class="hero-tag"><strong>🧴</strong> Farmácias</div>
+    <div class="hero-tag"><strong>📱</strong> Eletrônicos</div>
+    <div class="hero-tag"><strong>👗</strong> Roupas</div>
+    <div class="hero-tag"><strong>🛒</strong> Mercadinhos</div>
+    <div class="hero-tag"><strong>🏪</strong> Qualquer loja</div>
+  </div>
+  <div class="hero-cta">
+    <a href="#comprar" class="btn-primary"><span>🚀 Quero o Controle Total Agora</span></a>
+  </div>
+  <div class="price-tag">
+    <span class="price-old">R$ 197</span>
+    por apenas <strong>R$ 37</strong> · acesso imediato via WhatsApp
+  </div>
+</section>
+
+<!-- ══ STATS ══ -->
+<section class="section-pad-sm" style="background:var(--navy);">
+  <div class="stats-row reveal">
+    <div class="stat-item">
+      <span class="stat-num" data-target="18000">0</span>
+      <span class="stat-label">Lojas atendidas</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">5★</span>
+      <span class="stat-label">Avaliação média</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" data-target="4128">0</span>
+      <span class="stat-label">Fórmulas automáticas</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" data-target="10">0</span>
+      <span class="stat-label">Abas organizadas</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROBLEMA ══ -->
+<section class="section-pad">
+  <span class="section-label reveal">O problema</span>
+  <h2 class="section-title reveal">Você reconhece alguma<br>dessas situações?</h2>
+  <div class="divider reveal"></div>
+  <div class="pain-grid reveal">
+    <div class="pain-card">
+      <div class="pain-icon">😰</div>
+      <h3>Não sabe o lucro real</h3>
+      <p>Vendeu, mas não sabe se ganhou ou perdeu dinheiro no mês. Sensação constante de trabalhar à toa.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">📦</div>
+      <h3>Estoque fora de controle</h3>
+      <p>Produtos sumindo sem explicação, itens em falta na hora errada, ou dinheiro parado em excesso de estoque.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">💸</div>
+      <h3>Dinheiro vazando</h3>
+      <p>Despesas que aparecem no final do mês e você não sabe de onde vieram. O caixa não fecha nunca.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">🗂️</div>
+      <h3>Informação espalhada</h3>
+      <p>Dados em caderno, celular, cabeça e papel. Nada centralizado, impossível tomar decisões.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SOLUÇÃO ══ -->
+<section class="section-pad" style="background:var(--navy);">
+  <span class="section-label reveal">A solução</span>
+  <h2 class="section-title reveal">Tudo que sua loja precisa<br><span style="color:var(--accent)">em uma só planilha</span></h2>
+  <div class="divider reveal"></div>
+  <div class="features-grid reveal">
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <h3>Controle de Vendas</h3>
+      <p>Registre cada venda com produto, quantidade, cliente e forma de pagamento. Total calculado automaticamente.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💸</div>
+      <h3>Controle de Despesas</h3>
+      <p>Categorize aluguel, energia, fornecedores, salários e muito mais. Veja onde o dinheiro está indo de verdade.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🗃️</div>
+      <h3>Estoque Automático</h3>
+      <p>Status em tempo real: ✅ OK, ⚠️ Baixo ou ❌ Sem Estoque. Nunca mais fique na mão na hora de vender.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👥</div>
+      <h3>Cadastro de Clientes</h3>
+      <p>Histórico completo de clientes com total de compras calculado automaticamente. Fidelize de verdade.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Dashboard Visual</h3>
+      <p>Receita, despesas, lucro, margem e gráficos atualizados em tempo real. Gestão na ponta dos dedos.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💵</div>
+      <h3>Fluxo de Caixa Mensal</h3>
+      <p>Veja mês a mês quanto entrou, saiu e sobrou. Com saldo acumulado e margem líquida calculados.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔄</div>
+      <h3>Contas a Pagar/Receber</h3>
+      <p>Nunca mais perca um vencimento. Controle completo do que você deve e do que te devem.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📝</div>
+      <h3>Gerador de Orçamentos</h3>
+      <p>Crie orçamentos profissionais com logo, itens, descontos e total — pronto para enviar ao cliente.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👔</div>
+      <h3>Cadastro de Funcionários</h3>
+      <p>Gerencie equipe, salários, cargos e folha de pagamento de forma simples e organizada.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ O QUE VEM DENTRO ══ -->
+<section class="section-pad">
+  <span class="section-label reveal">O que está incluído</span>
+  <h2 class="section-title reveal">10 abas profissionais,<br>já prontas para usar</h2>
+  <div class="divider reveal"></div>
+  <div class="inside-grid reveal">
+    <div class="inside-card"><div class="num">1</div><div><h4>🏠 Início / Menu</h4><p>Dashboard de KPIs do mês e navegação rápida</p></div></div>
+    <div class="inside-card"><div class="num">2</div><div><h4>📦 Vendas</h4><p>Até 500 vendas com cálculo automático de total</p></div></div>
+    <div class="inside-card"><div class="num">3</div><div><h4>💸 Despesas</h4><p>Categorias, fornecedores e totais automáticos</p></div></div>
+    <div class="inside-card"><div class="num">4</div><div><h4>🗃️ Estoque</h4><p>Margem, valor total e status automático por produto</p></div></div>
+    <div class="inside-card"><div class="num">5</div><div><h4>👥 Clientes</h4><p>Histórico e total de compras por cliente via fórmula</p></div></div>
+    <div class="inside-card"><div class="num">6</div><div><h4>🔄 Contas</h4><p>Pagar e receber com saldo líquido calculado</p></div></div>
+    <div class="inside-card"><div class="num">7</div><div><h4>💵 Fluxo de Caixa</h4><p>Resultado mensal e saldo acumulado do ano</p></div></div>
+    <div class="inside-card"><div class="num">8</div><div><h4>📊 Dashboard</h4><p>Gráficos e alertas de estoque baixo automáticos</p></div></div>
+    <div class="inside-card"><div class="num">9</div><div><h4>📝 Orçamento</h4><p>Gerador de propostas comerciais com total e desconto</p></div></div>
+    <div class="inside-card"><div class="num">10</div><div><h4>👔 Funcionários</h4><p>Equipe, salários e total da folha ativa</p></div></div>
+  </div>
+</section>
+
+<!-- ══ SEGMENTOS ══ -->
+<section class="section-pad-sm" style="background:var(--navy);">
+  <span class="section-label reveal">Para quem é</span>
+  <h2 class="section-title reveal">Funciona para qualquer tipo de loja</h2>
+  <p class="section-sub reveal">Já foi testado e aprovado em dezenas de segmentos diferentes</p>
+  <div class="seg-grid reveal">
+    <div class="seg-card"><span class="seg-emoji">🧴</span><span>Farmácias</span></div>
+    <div class="seg-card"><span class="seg-emoji">📱</span><span>Eletrônicos</span></div>
+    <div class="seg-card"><span class="seg-emoji">👗</span><span>Roupas e Moda</span></div>
+    <div class="seg-card"><span class="seg-emoji">🛒</span><span>Mercadinhos</span></div>
+    <div class="seg-card"><span class="seg-emoji">🍕</span><span>Alimentação</span></div>
+    <div class="seg-card"><span class="seg-emoji">💄</span><span>Beleza</span></div>
+    <div class="seg-card"><span class="seg-emoji">🔧</span><span>Ferragens</span></div>
+    <div class="seg-card"><span class="seg-emoji">🐾</span><span>Pet Shop</span></div>
+  </div>
+</section>
+
+<!-- ══ COMPARAÇÃO ══ -->
+<section class="section-pad">
+  <span class="section-label reveal">Por que escolher</span>
+  <h2 class="section-title reveal">Controle Total vs. Outras opções</h2>
+  <div class="divider reveal"></div>
+  <div class="compare-wrap reveal">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th class="col-feat">Recurso</th>
+          <th class="col-good">✅ Controle Total</th>
+          <th class="col-bad">❌ Outras Planilhas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Fácil de usar</td><td class="yes">Sim, qualquer pessoa</td><td class="no">Complicado</td></tr>
+        <tr><td>Estoque automático com alertas</td><td class="yes">Sim, com status visual</td><td class="no">Manual ou inexistente</td></tr>
+        <tr><td>Dashboard com gráficos</td><td class="yes">Sim, atualiza sozinho</td><td class="no">Não tem</td></tr>
+        <tr><td>Fluxo de caixa mensal</td><td class="yes">Sim, 12 meses</td><td class="no">Básico ou ausente</td></tr>
+        <tr><td>Gerador de Orçamentos</td><td class="yes">Sim, incluso</td><td class="no">Não tem</td></tr>
+        <tr><td>Contas a pagar e receber</td><td class="yes">Sim, com saldo líquido</td><td class="no">Separado ou ausente</td></tr>
+        <tr><td>Suporte humanizado</td><td class="yes">WhatsApp incluso</td><td class="no">Sem suporte</td></tr>
+        <tr><td>Atualizações gratuitas</td><td class="yes">Para sempre</td><td class="no">Paga ou inexistente</td></tr>
+        <tr><td>Preço</td><td class="yes">Apenas R$ 37</td><td class="no">R$ 100 a R$ 500+</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══ BÔNUS ══ -->
+<section class="section-pad-sm" style="background:var(--navy);">
+  <span class="section-label reveal">Bônus exclusivos</span>
+  <h2 class="section-title reveal">Você ainda recebe <span style="color:var(--accent2)">3 bônus grátis</span></h2>
+  <div class="divider reveal"></div>
+  <div class="bonus-grid reveal">
+    <div class="bonus-card">
+      <span class="bonus-tag">Bônus 1</span>
+      <h3>🎁 Acesso Extra para Presentear</h3>
+      <p>Compre um acesso e ganhe outro para dar de presente a um sócio, familiar ou amigo empreendedor.</p>
+      <div class="bonus-value"><span class="bonus-price-old">R$ 197,90</span><span class="bonus-price-new">GRÁTIS</span></div>
+    </div>
+    <div class="bonus-card">
+      <span class="bonus-tag">Bônus 2</span>
+      <h3>📱 Treinamento de Vendas por WhatsApp</h3>
+      <p>Material completo com as melhores práticas para fechar mais vendas usando o WhatsApp como ferramenta.</p>
+      <div class="bonus-value"><span class="bonus-price-old">R$ 97,00</span><span class="bonus-price-new">GRÁTIS</span></div>
+    </div>
+    <div class="bonus-card">
+      <span class="bonus-tag">Bônus 3</span>
+      <h3>🎥 Vídeos Tutoriais Completos</h3>
+      <p>Passo a passo em vídeo para configurar e usar todas as abas da planilha. Até quem nunca usou Excel consegue.</p>
+      <div class="bonus-value"><span class="bonus-price-old">R$ 67,00</span><span class="bonus-price-new">GRÁTIS</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ DEPOIMENTOS ══ -->
+<section class="section-pad">
+  <span class="section-label reveal">Depoimentos reais</span>
+  <h2 class="section-title reveal">Quem já usa, não abre mão</h2>
+  <div class="divider reveal"></div>
+  <div class="testi-grid reveal">
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <p class="testi-text">"A planilha de controle entrega tudo que uma empresa precisa. Com certeza foi uma evolução pro meu negócio. Estou muito feliz com ela!"</p>
+      <div class="testi-author"><div class="testi-avatar">E</div><div><div class="testi-name">Eduardo Gerheim</div><div class="testi-role">Loja de Eletrônicos</div></div></div>
+    </div>
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <p class="testi-text">"Diferente de outras ferramentas, é fácil e intuitiva! O único ponto é lembrar de ter o Excel instalado. Mas o suporte te ajuda com TUDO!"</p>
+      <div class="testi-author"><div class="testi-avatar">A</div><div><div class="testi-name">Andrea Mendonça</div><div class="testi-role">Farmácia de Bairro</div></div></div>
+    </div>
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <p class="testi-text">"Achei sensacional o layout e a usabilidade. Tem tudo que eu queria e ainda economizei no preço. Indico demais para qualquer lojista!"</p>
+      <div class="testi-author"><div class="testi-avatar">F</div><div><div class="testi-name">Fernando Martinho</div><div class="testi-role">Loja de Roupas</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRICING ══ -->
+<section class="section-pad" id="comprar" style="background:var(--navy);">
+  <span class="section-label reveal">Preço especial</span>
+  <h2 class="section-title reveal">Invista no controle<br>do seu negócio hoje</h2>
+  <div class="divider reveal"></div>
+  <div class="pricing-box reveal">
+    <div class="pricing-badge">⏳ Oferta por Tempo Limitado</div>
+    <div class="pricing-title">Planilha Controle Total</div>
+    <div class="pricing-subtitle">Para Pequenas Lojas · Acesso Vitalício</div>
+    <div class="price-from">De <del>R$ 197,00</del> por apenas:</div>
+    <div class="price-main"><sup>R$</sup>37</div>
+    <div class="price-install">ou 8× de R$ 5,27 no cartão</div>
+    <ul class="pricing-checks">
+      <li>10 abas profissionais e completas</li>
+      <li>4.128 fórmulas automáticas</li>
+      <li>Dashboard com gráficos visuais</li>
+      <li>Estoque com alertas automáticos</li>
+      <li>Gerador de Orçamentos profissional</li>
+      <li>3 Bônus exclusivos (valor R$ 361,90)</li>
+      <li>Suporte via WhatsApp incluso</li>
+      <li>Atualizações gratuitas para sempre</li>
+      <li>Acesso imediato após a compra</li>
+    </ul>
+    <a href="#" class="btn-big">🛒 COMPRAR AGORA — R$ 37,00</a>
+    <div class="guarantee">
+      <span class="guarantee-icon">🛡️</span>
+      <span>Garantia de 15 dias — Se não gostar, devolvemos 100% do valor</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FAQ ══ -->
+<section class="section-pad">
+  <span class="section-label reveal">Dúvidas frequentes</span>
+  <h2 class="section-title reveal">Perguntas e Respostas</h2>
+  <div class="divider reveal"></div>
+  <div class="faq-list reveal">
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Como recebo o acesso após a compra?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">O acesso é imediato! Assim que você finalizar o pagamento, nossa equipe entra em contato via WhatsApp para te enviar a planilha e auxiliar na configuração inicial. Basta informar seu número corretamente no cadastro.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Preciso saber mexer em Excel?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">Não! A planilha foi desenvolvida para quem nunca usou Excel na vida. Tudo que você precisa fazer é lançar suas vendas e despesas — o resto a planilha calcula sozinha. Além disso, enviamos vídeos tutoriais passo a passo.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Funciona para minha loja específica?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">Sim! A planilha é adaptável para qualquer segmento: farmácias, lojas de eletrônicos, roupas, mercadinhos, pet shops, ferragens e muito mais. As categorias e campos são personalizáveis conforme seu negócio.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        E se eu não gostar?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">Você tem 15 dias para testar a planilha com total liberdade. Se por qualquer motivo achar que não é para você, basta nos chamar no WhatsApp e devolvemos 100% do seu dinheiro, sem burocracia e sem questionamentos.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Porque está tão barata?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">Esta é uma oferta especial por tempo limitado para ampliar o acesso da ferramenta para pequenos lojistas. Essa mesma planilha foi vendida por R$ 197 por anos. Aproveite enquanto o preço está nesse patamar!</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Tem suporte?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">Sim! Oferecemos suporte humanizado via WhatsApp. Nossa equipe está disponível para tirar dúvidas, ajudar na configuração e resolver qualquer questão que aparecer durante o uso.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FINAL CTA ══ -->
+<section class="section-pad-sm" style="background:linear-gradient(135deg,#0B0E1A 0%,#0D2B22 100%);text-align:center;">
+  <h2 class="section-title reveal" style="font-size:clamp(1.8rem,4vw,3rem);">
+    Sua loja merece<br><span style="color:var(--accent)">controle de verdade</span>
+  </h2>
+  <p style="color:var(--muted);max-width:480px;margin:16px auto 36px;" class="reveal">
+    Por menos de R$ 40, você tem acesso a uma ferramenta que pode transformar completamente a gestão do seu negócio.
+  </p>
+  <div class="reveal">
+    <a href="#comprar" class="btn-primary"><span>🚀 Garantir Meu Acesso por R$ 37</span></a>
+    <p style="color:var(--muted);font-size:.85rem;margin-top:14px;">🛡️ Garantia de 15 dias · Acesso imediato · Suporte incluído</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>Planilha Controle Total</strong> · Pequenas Lojas &nbsp;|&nbsp;
+  CNPJ: 00.000.000/0001-00 &nbsp;|&nbsp;
+  Suporte: <a href="#">WhatsApp</a> &nbsp;|&nbsp;
+  <a href="#">Política de Privacidade</a>
+</footer>
+
+<!-- STICKY CTA -->
+<a href="#comprar" class="sticky-cta">🛒 R$ 37 — Comprar</a>
+
+<script>
+// FAQ Toggle
+function toggleFaq(btn){
+  const item=btn.closest('.faq-item');
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+
+// Scroll reveal
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// Counter animation
+function animateCounter(el,target,suffix=''){
+  const duration=1800;
+  const start=performance.now();
+  const update=now=>{
+    const t=Math.min((now-start)/duration,1);
+    const ease=1-Math.pow(1-t,4);
+    const val=Math.round(ease*target);
+    el.textContent=val.toLocaleString('pt-BR')+suffix;
+    if(t<1)requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+const counterObserver=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const el=e.target;
+      const target=parseInt(el.dataset.target);
+      if(target)animateCounter(el,target);
+      counterObserver.unobserve(el);
+    }
+  });
+},{threshold:.5});
+document.querySelectorAll('[data-target]').forEach(el=>counterObserver.observe(el));
+
+// Hide sticky on hero
+const stickyCta=document.querySelector('.sticky-cta');
+const hero=document.querySelector('.hero');
+new IntersectionObserver(([e])=>{
+  stickyCta.style.opacity=e.isIntersecting?'0':'1';
+  stickyCta.style.pointerEvents=e.isIntersecting?'none':'auto';
+}).observe(hero);
+</script>
+</body>
+</html>
